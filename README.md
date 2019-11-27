@@ -1,4 +1,9 @@
 # Zms
+## Use
+```
+npm install
+npm run serve
+```
 ## Prepare
 ### Install
 ```
@@ -8,7 +13,5 @@ npm i script-loader --save
 ```
 ### Config
 add vue.config.js
-```
-```
 
 

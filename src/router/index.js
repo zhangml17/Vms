@@ -6,7 +6,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    component: () => import('../components/HelloWorld.vue')
+    component: () => import('../views/zeditor/index.vue')
   }
 ]
 

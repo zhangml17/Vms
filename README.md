@@ -18,4 +18,5 @@ npm i node-sass sass-loader --save
 
 ## Operation
 + 默认ctrl + 鼠标左键可以进行多个cell的选择
++ 使用mxEditor构建的graph，默认鼠标右键可以拖动graph层，禁用了鼠标右击浏览器默认事件
 

@@ -5,10 +5,13 @@
       <!-- <el-button type="primary" icon="el-icon-delete" @click="removeCell"></el-button> -->
       <button class="drag-menu-item" @click="zoomIn">ZoomIn</button>
       <button class="drag-menu-item" @click="zoomOut">ZoomOut</button>
+      <button class="drag-menu-item" @click="actualSize">actualSize</button>
       <button class="drag-menu-item" @click="unDo">Undo</button>
       <button class="drag-menu-item" @click="reDo">Redo</button>
+      <button class="drag-menu-item" @click="show">Show</button>
       <button class="drag-menu-item" @click="removeCell">Delete</button>
       <button class="drag-menu-item" @click="toggleGrid">ToggleGrid</button>
+      <!-- <button class="drag-menu-item" @click="print">Print</button> -->
     </div>
 
     <div class="img-drag-wrapper">
@@ -20,7 +23,7 @@
     <!-- 整个graph容器 -->
     <div class="graph-container" ref="graph_container" :style="{backgroundImage:`url(${backgroundImage})`}">
     </div>
-    <!-- 导航框 -->
+    <!-- 缩略图框 -->
     <div class="outline-container" ref="outline_container"></div>
   </div>
 </template>
@@ -31,12 +34,13 @@
 import mxgraph from '../../utils/index'
 const  {mxGraph, mxClient, mxUtils, mxGraphHandler, mxEdgeHandler,
         mxDragSource, mxCell, mxGuide, mxEvent, mxGeometry, mxUndoManager,
-        mxOutline } = mxgraph
+        mxOutline, mxEditor } = mxgraph
 
 export default {
   data() {
     return {
       graph: null,
+      editor: null,
       outline: null,
       undoManger: null,
       isBrowserSupported: true,
@@ -47,6 +51,15 @@ export default {
     }
   },
   methods: {
+    print(){
+      this.editor.execute('print')
+    },
+    actualSize(){
+      this.editor.execute('actualSize')
+    },
+    show(){
+      this.editor.execute('show');
+    },
     toggleGrid() {
       if(this.backgroundImage){
         this.backgroundImage = ''
@@ -126,10 +139,23 @@ export default {
         return !mxEvent.isAltDown(evt);
       };
       mxEdgeHandler.prototype.snapToTerminals = true;
+
       // 创建graph
-      this.graph = new mxGraph(this.$refs.graph_container)
-      // 创建导航窗口
+      // 方式一：直接构建graph实例
+      // this.graph = new mxGraph(this.$refs.graph_container)
+      // 方式二：利用mxEditor实例创建graph（推荐）
+      this.editor = new mxEditor()
+      this.graph = this.editor.graph
+      this.editor.setGraphContainer(this.$refs.graph_container);
+      // 创建缩略图
       this.outline = new mxOutline(this.graph, this.$refs.outline_container);
+      // // 缩略图的 "挂起"(缩略图不随graph的变化而变化，只有当手动操作缩略图时才会更新graph的状态)状态, 默认为false
+      // this.outline.suspended = !this.outline.suspended
+      // if(!this.outline.suspended) {
+      //   this.outline.update(true)
+      // }
+
+
       // 构造具有给定历史记录大小的新撤消管理器。默认100步
       this.undoManger = new mxUndoManager()
       this.initUndoAndRedo()
@@ -175,6 +201,7 @@ export default {
       width: 80px;
       height:28px;
       margin: 10px;
+      border-radius: 20%;
     }
   }
   .img-drag-wrapper {
@@ -203,9 +230,9 @@ export default {
     position: absolute;
     top: 48px;
     right: 0;
-    border: 1px dashed #000;
-    width: 200px;
-    height: 160px;
+    border: 3px dashed #000;
+    width: 160px;
+    height: 120px;
     background: transparent;
   }
 }
